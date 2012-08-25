@@ -7,15 +7,26 @@ class ChildLayoutExtension < Radiant::Extension
   description RadiantChildLayoutExtension::DESCRIPTION
   url         RadiantChildLayoutExtension::URL
 
-  # See your config/routes.rb file in this extension to define custom routes
 
-  extension_config do |config|
-    # config is the Radiant.configuration object
-  end
-
-  def activate
-    # tab 'Content' do
-    #   add_item "Child Layout", "/admin/child_layout", :after => "Pages"
-    # end
+  def activate    
+    admin.page.edit.add :layout, "admin/pages/passed_child_layout", :after => "edit_layout"
+    
+    Page.class_eval do
+      
+      belongs_to :set_layout, :class_name => 'Layout', :foreign_key => 'layout_id'
+   		belongs_to :child_layout, :class_name => 'Layout', :foreign_key => "child_layout_id"
+   		
+   		# Override layout to check for a passed child layout before inheriting the parent set layout
+			def layout
+			  unless set_layout
+          if parent?
+            parent.child_layout ? parent.child_layout : parent.layout
+          end
+        else
+          set_layout
+        end
+		  end
+		  
+    end    
   end
 end

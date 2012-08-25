@@ -1,0 +1,7 @@
+- options = "<option value=''>&lt;inherit&gt;</option>"
+- selected_id = @page.child_layout.id rescue nil
+- options = options + options_from_collection_for_select(Layout.find(:all), "id", "name", selected_id)
+
+%p 
+  %label{:for => "page_child_layout_id"} Child Layout
+  = select_tag "page[child_layout_id]", options
